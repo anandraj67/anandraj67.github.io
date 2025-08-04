@@ -1,1 +1,45 @@
-Hello World
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kite Callback</title>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    (async function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const request_token = urlParams.get("request_token");
+
+      if (!request_token) {
+        document.body.innerText = "No request_token received.";
+        return;
+      }
+
+      const apiKey = "your_api_key";
+      const apiSecret = "your_api_secret";
+
+      const payload = new URLSearchParams({
+        api_key: apiKey,
+        request_token,
+        checksum: new jsSHA("SHA-256", "TEXT").update(apiKey + request_token + apiSecret).getHash("HEX")
+      });
+
+      const response = await fetch("https://api.kite.trade/session/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: payload
+      });
+
+      const data = await response.json();
+      const accessToken = data.data.access_token;
+
+      chrome.runtime.sendMessage({ action: "store_token", access_token: accessToken }, response => {
+        document.body.innerText = response.success
+          ? "Login successful. You can close this tab."
+          : "Login failed.";
+      });
+    })();
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/3.2.0/sha.js"></script>
+</body>
+</html>
