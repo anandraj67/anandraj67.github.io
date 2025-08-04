@@ -6,12 +6,22 @@
 <body>
   <h2>Processing login...</h2>
   <script>
-    const requestToken = new URLSearchParams(window.location.search).get("request_token");
+    const params = new URLSearchParams(window.location.search);
+    const requestToken = params.get("request_token");
+
+    console.log("🌐 Page loaded");
+    console.log("🔍 URL =", window.location.href);
+    console.log("🧪 request_token =", requestToken);
 
     if (requestToken) {
-      window.postMessage({ type: "kite_token", request_token: requestToken }, "*");
+      console.log("📤 Posting token with window.postMessage");
+      window.postMessage({
+        type: "kite_token",
+        request_token: requestToken
+      }, "*");
     } else {
-      document.body.innerText = "❌ Missing request_token.";
+      console.log("❌ No request_token in URL");
+      document.body.innerText = "❌ request_token missing in URL.";
     }
   </script>
 </body>
