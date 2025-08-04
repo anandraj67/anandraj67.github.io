@@ -13,16 +13,27 @@
     console.log("🔍 URL =", window.location.href);
     console.log("🧪 request_token =", requestToken);
 
-    if (requestToken) {
-      console.log("📤 Posting token with window.postMessage");
-      window.postMessage({
-        type: "kite_token",
-        request_token: requestToken
-      }, "*");
-    } else {
-      console.log("❌ No request_token in URL");
-      document.body.innerText = "❌ request_token missing in URL.";
+    function sendToken() {
+      if (requestToken) {
+        console.log("📤 Sending token to extension via window.postMessage");
+        window.postMessage({
+          type: "kite_token",
+          request_token: requestToken
+        }, "*");
+      } else {
+        console.log("❌ No request_token in URL");
+        document.body.innerText = "❌ request_token missing in URL.";
+      }
     }
+
+    // 🔄 Wait for signal from content.js
+    window.addEventListener("message", (event) => {
+      if (event.source !== window) return;
+      if (event.data && event.data.type === "kite_ready") {
+        console.log("🔁 content.js is ready — sending token now...");
+        sendToken();
+      }
+    });
   </script>
 </body>
 </html>
