@@ -4,16 +4,14 @@
   <title>Kite Callback</title>
 </head>
 <body>
-  <h2>Logging in...</h2>
+  <h2>Processing login...</h2>
   <script>
-    const requestToken = new URLSearchParams(location.search).get("request_token");
+    const requestToken = new URLSearchParams(window.location.search).get("request_token");
 
     if (requestToken) {
-      chrome.runtime.sendMessage({ action: "received_token", request_token: requestToken }, response => {
-        document.body.innerText = response?.success ? "Login complete. You can close this tab." : "Login failed.";
-      });
+      window.postMessage({ type: "kite_token", request_token: requestToken }, "*");
     } else {
-      document.body.innerText = "Missing request_token.";
+      document.body.innerText = "❌ Missing request_token.";
     }
   </script>
 </body>
