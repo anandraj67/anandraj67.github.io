@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login Callback</title>
-  <script>
-    window.addEventListener("DOMContentLoaded", () => {
-      console.log("🌐 Page loaded");
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const requestToken = urlParams.get("request_token");
-
-      console.log("🔍 URL =", window.location.href);
-      console.log("🧪 request_token =", requestToken);
-
-      // Wait until content.js is ready
-      const interval = setInterval(() => {
-        console.log("🔁 content.js is ready — sending token now...");
-        window.postMessage({ type: "kite_token", token: requestToken }, "*");
-        clearInterval(interval);
-      }, 500);
-    });
-  </script>
+  <meta charset="utf-8">
+  <title>Kite Callback</title>
 </head>
 <body>
-  <h3>Processing login...</h3>
+  <script>
+    console.log("🌐 Page loaded");
+
+    const url = new URL(window.location.href);
+    const requestToken = url.searchParams.get("request_token");
+    console.log("🔍 URL =", window.location.href);
+    console.log("🧪 request_token =", requestToken);
+
+    // Wait for content.js to signal it's ready
+    window.addEventListener("message", (event) => {
+      if (event.source !== window || !event.data?.extensionReady) return;
+      console.log("🔁 content.js is ready — sending token now...");
+      window.postMessage({ request_token: requestToken }, "*");
+    });
+
+    // Fallback: resend after timeout if no response
+    setTimeout(() => {
+      console.log("⏱️ Timeout fallback: sending request_token anyway...");
+      window.postMessage({ request_token: requestToken }, "*");
+    }, 3000);
+  </script>
 </body>
 </html>
