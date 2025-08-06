@@ -1,11 +1,6 @@
-<!DOCTYPE htm    console.log("🧪 request_token =", requestToken);
-
-    // Wait for content.js to signal it's ready
-    window.addEventListener("message", (event) => {
-      if (event.source !== window || !event.data?.extensionReady) return;
-      console.log("🔁 content.js is ready — sending token now...");
-      window.postMessage({ request_token: requestToken }, "*");
-    });>
+<!DOCTYPE html>
+<html>
+<head>
   <meta charset="utf-8">
   <title>Kite Callback</title>
 </head>
@@ -18,17 +13,10 @@
     console.log("🔍 URL =", window.location.href);
     console.log("🧪 request_token =", requestToken);
 
-    let tokenSent = false; // Flag to prevent duplicate sends
-
     // Wait for content.js to signal it's ready
     window.addEventListener("message", (event) => {
       if (event.source !== window || !event.data?.extensionReady) return;
-      if (tokenSent) {
-        console.log("� Token already sent, ignoring duplicate request");
-        return;
-      }
-      console.log("�🔁 content.js is ready — sending token now...");
-      tokenSent = true;
+      console.log("🔁 content.js is ready — sending token now...");
       window.postMessage({ request_token: requestToken }, "*");
     });
   </script>
