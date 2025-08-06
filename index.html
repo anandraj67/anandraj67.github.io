@@ -18,6 +18,12 @@
       if (event.source !== window || !event.data?.extensionReady) return;
       console.log("🔁 content.js is ready — sending token now...");
       window.postMessage({ request_token: requestToken }, "*");
+      
+      // Close the tab after sending the token
+      setTimeout(() => {
+        console.log("🚪 Closing callback tab...");
+        window.close();
+      }, 500); // 0.5 second delay to ensure message is sent
     });
   </script>
 </body>
